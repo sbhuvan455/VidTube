@@ -11,14 +11,15 @@ export const uploadOnCloudinary = async (file_path) => {
     try {
         if(!file_path) return null;
 
-        const response = await cloudinary.v2.uploader.upload(file_path);
+        const response = await cloudinary.uploader.upload(file_path);
 
-        fs.unlink(file_path);
+        fs.unlinkSync(file_path);
         return response;
 
     } catch (error) {
-        fs.unlink(file_path);
+        fs.unlinkSync(file_path);
         console.log("Error uploading file on cloudinary");
+        console.log(error);
         return null;
     }
 }
