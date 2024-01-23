@@ -168,3 +168,58 @@ export const updateVideo = AsyncHandler(async (req, res) => {
     )
 })
 
+export const deleteVideo = AsyncHandler(async (req, res) => {
+    const { videoId } = req.params
+    
+    if(!videoId){
+        throw new ApiError(422, "VideoID not found");
+    }
+
+    const video = await Video.findById(videoId);
+
+    if(!video){
+        throw new ApiError(422, "Video not found");
+    }
+
+    if(!req.user._id.equals(video.owner._id)){
+        throw new ApiError(401, "UnAuthorized User");
+    }
+
+    await deleteFromCloudinary(video.Thumbnail)
+    await deleteFromCloudinary(video.videoFile)
+
+    const result = await Video.findByIdAndDelete(videoId);
+    console.log(result);
+
+    res.status(200)
+    .json(
+        new ApiResponse(200, "Video Deleted Successfully", result)
+    )
+
+})
+
+export const togglePublishStatus = AsyncHandler(async (req, res) => {
+    const { videoId } = req.params
+
+    if(!videoId){
+        throw new ApiError(400, "Video Id not Found")
+    }
+
+    const video = await Video.findById(videoId);
+
+    if(!video){
+        throw new ApiError(404, "Video Not Found")
+    }
+
+    if(!req.user._id.equals(video.owner._id)){
+        throw new ApiError(400, "UnAuthorized requests")
+    }
+
+    video.isPublished = !(video.isPublished)
+    video.save({validateBeforeSave: false});
+
+    res.status(200)
+    .json(
+        new ApiResponse(200, "Successfully updated", video)
+    )
+})
