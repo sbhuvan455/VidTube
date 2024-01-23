@@ -11,7 +11,7 @@ export const uploadOnCloudinary = async (file_path) => {
     try {
         if(!file_path) return null;
 
-        const response = await cloudinary.uploader.upload(file_path);
+        const response = await cloudinary.uploader.upload(file_path, {resource_type: "auto"});
 
         fs.unlinkSync(file_path);
         return response;
@@ -21,5 +21,19 @@ export const uploadOnCloudinary = async (file_path) => {
         console.log("Error uploading file on cloudinary");
         console.log(error);
         return null;
+    }
+}
+
+export const deleteFromCloudinary = async (file_path) => {
+    try {
+
+        const imageNameArray = file_path.split('/');
+        const imageName = imageNameArray[imageNameArray.length - 1].split('.')[0];
+
+        const response = await cloudinary.uploader.destroy(imageName)
+        console.log(response);
+
+    } catch (error) {
+        console.log("Error deleting file from cloudinary", error)
     }
 }
