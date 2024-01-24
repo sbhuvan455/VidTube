@@ -116,6 +116,9 @@ export const getVideoById = AsyncHandler(async (req, res) => {
         throw new ApiError(404, "Video Not Found");
     }
 
+    req.user.watchHistory.push(video);
+    req.user.save({ validateBeforeSave: false })
+
     res.status(200)
     .json(
         new ApiResponse(200, "Video Found Successfully", video)
