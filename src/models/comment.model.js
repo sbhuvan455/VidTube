@@ -21,4 +21,4 @@ const commentsSchema = new Schema({
 
 commentsSchema.plugin(mongooseAggregatePaginate);
 
-export const Comments = mongoose.model("Comment", commentsSchema);
+export const Comment = mongoose.model("Comment", commentsSchema);
