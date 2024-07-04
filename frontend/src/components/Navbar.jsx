@@ -15,18 +15,21 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Link } from "react-router-dom";
 
 function Navbar() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
 
   return (
-    <div className="w-full h-16 bg-background flex justify-between items-center px-4">
+    <div className="w-full md:h-16 h-[8vh] bg-background flex justify-between items-center px-4">
       <div className="flex items-center ">
         <Sidebar />
-        <img src="youTube.png" alt="logo" className="w-28 cursor-pointer" />
+        <Link to='/'>
+          <img src="youTube.png" alt="logo" className="md:w-28 w-44 cursor-pointer" />
+        </Link>
       </div>
       <div className="w-3/4">
-        <div className="flex items-center justify-center py-10">
+        <div className="hidden md:flex items-center justify-center py-10">
           <form className="w-3/5 flex relative">
             <input
               type="text"
@@ -49,15 +52,18 @@ function Navbar() {
         </div>
       </div>
       {isLoggedIn ? (
-        <div className="flex gap-3">
+        <div className="flex md:gap-3 items-center">
           <IconButton>
-            <RiVideoAddLine size={25} className="cursor-pointer" />
+            <CiSearch className="md:hidden" color="black" />
           </IconButton>
           <IconButton>
-            <FiBell size={25} className="cursor-pointer" />
+            <RiVideoAddLine size={25} className="cursor-pointer" color="black" />
+          </IconButton>
+          <IconButton>
+            <FiBell size={25} className="cursor-pointer" color="black"/>
           </IconButton>
           <DropdownMenu>
-            <DropdownMenuTrigger><CgProfile size={27}/></DropdownMenuTrigger>
+            <DropdownMenuTrigger><CgProfile size={25} className="hidden md:block"/></DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
@@ -67,14 +73,22 @@ function Navbar() {
               <DropdownMenuItem>Subscription</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+          <IconButton>
+            <CgProfile size={25} className="md:hidden" color="black"/>
+          </IconButton>
         </div>
       ) : (
+        <div className="flex items-center">
+        <IconButton>
+          <CiSearch className="md:hidden"/>
+        </IconButton>
         <Button className="border-2 rounded-full overflow-hidden">
-          <div className="flex gap-2 items-center border-blue-600 border-2 p-1 rounded-full cursor-pointer">
-            <CgProfile size={27} />
+          <div className="md:flex inline md:gap-2 text-xs md:text-inherit items-center md:border-blue-600 md:border-2 md:p-1 rounded-full cursor-pointer">
+            <CgProfile size={27} className="hidden md:block"/>
             <div>Sign in</div>
           </div>
         </Button>
+        </div>
       )}
     </div>
   );
