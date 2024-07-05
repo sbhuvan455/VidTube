@@ -8,8 +8,6 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
 import { RxHamburgerMenu } from "react-icons/rx";
 import HomeIcon from '@mui/icons-material/Home';
 import VideoSettingsIcon from '@mui/icons-material/VideoSettings';
