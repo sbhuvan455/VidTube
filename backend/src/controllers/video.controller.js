@@ -46,6 +46,15 @@ export const getAllVideos = AsyncHandler(async (req, res) => {
         $limit: parseInt(limit)
     })
 
+    pipeline.push({
+        $lookup: {
+            from: 'users',
+            localField: 'owner',
+            foreignField: '_id',
+            as: 'ownerDetails'
+        }
+    });
+
     const videos = await Video.aggregate(pipeline);
 
     if (!videos || videos.length === 0) {
@@ -118,6 +127,9 @@ export const getVideoById = AsyncHandler(async (req, res) => {
 
     req.user.watchHistory.push(video);
     req.user.save({ validateBeforeSave: false })
+
+    video.views++;
+    video.save();
 
     res.status(200)
     .json(

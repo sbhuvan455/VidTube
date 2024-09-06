@@ -14,12 +14,15 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useRouter } from "next/navigation"
 
 export default function Navbar() {
-    const [isSignedIn, setIsSignedIn] = useState(true)
+    const [isSignedIn, setIsSignedIn] = useState(false)
+
+    const router = useRouter()
 
     const handleSignIn = () => {
-        setIsSignedIn(true)
+        router.push('/login')
     }
 
     const handleSignOut = () => {
