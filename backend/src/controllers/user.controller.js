@@ -82,12 +82,14 @@ export const RegisterUser = AsyncHandler(async (req, res) => {
 })
 
 export const LoginUser = AsyncHandler(async (req, res) => {
+    console.log("I am here");
     const { username, email, password } = req.body;
+    console.log(username, password)
 
     if(!email && !username) {
         throw new ApiError(401, "Enter your username or email");
     }
-
+    console.log('2');
     const user = await User.findOne({
         $or:[
             { username },
