@@ -3,12 +3,15 @@
 import { useEffect, useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { ThumbsUp, ThumbsDown, Share2, MessageSquare, Smile, MoreVerticalIcon } from 'lucide-react'
+import { ThumbsUp, ThumbsDown, Share2, MessageSquare, Smile, MoreVerticalIcon, Pencil, Flag, Trash2 } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Input } from '@/components/ui/input'
 import { useParams } from 'next/navigation'
 import axios from 'axios'
+import { useUserStore } from '@/store'
+import { Toaster } from "@/components/ui/toaster"
+import { useToast } from "@/hooks/use-toast"
 
 
 interface Owner {
@@ -59,8 +62,16 @@ export default function VideoStreamingPage() {
     const [video, setVideo] = useState<Video>()
     const [comments, setComments] = useState<Comment[]>()
     const [newComment, setNewComment] = useState<string>('');
+    const [editingCommentId, setEditingCommentId] = useState<string | null>(null)
+    const [editedCommentContent, setEditedCommentContent] = useState<string>('')
+    const [subscribers, setSubscribers] = useState<number>(0);
+    const [userHasLiked, setUserHasLiked] = useState(false);
+    const [userHasDisliked, setUserHasDisliked] = useState(false);
 
     const { videoId } = useParams();
+    const { toast } = useToast()
+
+    const { currentUser } = useUserStore();
 
     const emojis = ['😀', '😍', '😂', '😮', '😢', 
                     '😠', '👍', '👎', '❤️', '🎉', 
@@ -84,17 +95,142 @@ export default function VideoStreamingPage() {
                     .catch((error) => {
                         console.log(error)
                     })
-                    
+        
+        isSubscribed ? setSubscribers(subscribers - 1) : setSubscribers(subscribers + 1)
         setIsSubscribed(!isSubscribed)
     }
-    const handleLike = () => setLikes(likes + 1)
-    const handleDislike = () => setDislikes(dislikes + 1)
 
-    const handleCommentSubmit = () => {
-        console.log("Submit comment")
+    const handleLike = async() => {
+        await axios.post(`/api/v1/likes/toggle/v/${videoId}`, { type: 'like' })
+                    .then((response) => {
+                        console.log(response)
+
+                        if (userHasDisliked) {
+                            setDislikes(dislikes - 1);
+                            setUserHasDisliked(false);
+                        }
+
+                        if (userHasLiked) {
+                            setLikes(likes - 1);
+                            setUserHasLiked(false);
+                        } else {
+                            setLikes(likes + 1);
+                            setUserHasLiked(true);
+                        }
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                    })
+    }
+    
+    const handleDislike = async() => {
+        await axios.post(`/api/v1/likes/toggle/v/${videoId}`, { type: 'dislike' })
+                    .then((response) => {
+                        console.log(response)
+
+                        if (userHasLiked) {
+                            setLikes(likes - 1);
+                            setUserHasLiked(false);
+                        }
+                    
+                        if (userHasDisliked) {
+                            setDislikes(dislikes - 1);
+                            setUserHasDisliked(false);
+                        } else {
+                            setDislikes(dislikes + 1);
+                            setUserHasDisliked(true);
+                        }
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                    })
     }
 
-    const handleCommentUpdate = () => {}
+    const handleCommentSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+    
+        if (!newComment.trim()) {
+            toast({
+                title: "Comment cannot be empty",
+                description: "Please type something before submitting."
+            });
+            return;
+        }
+    
+        await axios.post(`/api/v1/comments/${videoId}`, { comment: newComment })
+            .then((response) => {
+                console.log(response.data.data);
+                setComments([
+                    ...comments!,
+                    response.data.data,
+                ]);
+                setNewComment('');
+            })
+            .catch((error) => {
+                console.log(error);
+                toast({
+                    title: "Unable to add comment to video",
+                    description: "Try again after some time"
+                });
+            });
+    }
+    
+
+    const handleCommentReport = () => {
+        console.log("comment is reported")
+        toast({
+            title: "The comment has been reported"
+        })
+    }
+
+    const handleCommentDelete = (comment: Comment) => {
+        console.log("Delete comment")
+        const commentId = comment._id
+
+        axios.delete(`/api/v1/comments/c/${commentId}`)
+                .then((response) => {
+                    console.log(response.data.data);
+                    setComments(comments?.filter((comment) => comment._id !== commentId));
+                })
+                .catch((error) => {
+                    console.log(error);
+                    toast({
+                        title: "Unable the delete comment",
+                        description: "Try again after some time",
+                    })
+                })
+    }
+    
+    const handleCommentEdit = (comment: Comment) => {
+        setEditingCommentId(comment._id)
+        setEditedCommentContent(comment.content)
+    }
+
+    const handleCancelEdit = () => {
+        setEditingCommentId(null)
+        setEditedCommentContent('')
+    }
+
+    const handleCommentUpdateSubmit = async (commentId: string) => {
+        await axios.patch(`/api/v1/comments/c/${commentId}`, { comment: editedCommentContent })
+                    .then((response) => {
+                        console.log(response)
+                        setComments(comments?.map((comment) =>
+                            comment._id === commentId ? { ...comment, content: editedCommentContent } : comment
+                        ))
+                        setEditingCommentId(null)
+                        setEditedCommentContent('')
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                        toast({
+                            title: "Some error occurred while editing comment",
+                            description: "Try again after a few seconds"
+                        })
+                        setEditingCommentId(null)
+                        setEditedCommentContent('')
+                    })
+    }
 
     const addEmoji = (emoji: string) => {
         setNewComment(newComment + emoji)
@@ -148,7 +284,19 @@ export default function VideoStreamingPage() {
                         })
         }
 
+        const getNumberOfSubscribers = async () => {
+            await axios.get(`/api/v1/subscriptions/u/${video?.owner[0]._id}`)
+                        .then((response) => {
+                            console.log(response.data.data.length)
+                            setSubscribers(response.data.data.length);
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                        })
+        }
+
         getSubscription();
+        getNumberOfSubscribers();
     }, [video])
 
     return (
@@ -173,7 +321,7 @@ export default function VideoStreamingPage() {
                 </Avatar>
                 <div>
                     <h2 className="font-semibold">{video?.owner[0].fullname}</h2>
-                    <p className="text-sm text-muted-foreground">1.2M subscribers</p>
+                    <p className="text-sm text-muted-foreground">{subscribers} subscribers</p>
                 </div>
             </div>
             <Button 
@@ -246,12 +394,26 @@ export default function VideoStreamingPage() {
                 <div key={index} className='flex items-center justify-between'>
                     <div className="flex space-x-4 mb-4">
                         <Avatar>
-                        <AvatarImage src={comment.owner_details.avatar} alt={`User ${index + 1}`} />
-                        <AvatarFallback>{comment.owner_details.fullname[0]}</AvatarFallback>
+                            <AvatarImage src={comment.owner_details.avatar} alt={`User ${index + 1}`} />
+                            <AvatarFallback>{comment.owner_details.fullname[0]}</AvatarFallback>
                         </Avatar>
                         <div>
                         <p className="font-semibold">{comment.owner_details.fullname}</p>
-                        <p className="text-sm text-muted-foreground">{comment.content}</p>
+                        {editingCommentId === comment._id ? (
+                                <div>
+                                    <Input
+                                        value={editedCommentContent}
+                                        onChange={(e) => setEditedCommentContent(e.target.value)}
+                                        className='w-[90vw]'
+                                    />
+                                    <div className="flex space-x-2 mt-2">
+                                        <Button onClick={() => handleCommentUpdateSubmit(comment._id)}>Save</Button>
+                                        <Button variant="secondary" onClick={handleCancelEdit}>Cancel</Button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <p className="text-sm text-muted-foreground">{comment.content}</p>
+                        )}
                         </div>
                     </div>
 
@@ -263,14 +425,30 @@ export default function VideoStreamingPage() {
                         </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align='end'>
-                            <DropdownMenuItem onSelect={handleCommentUpdate}>
-                                Update
+                            {(currentUser._id === comment.owner_details._id) && 
+                                <DropdownMenuItem onSelect={() => handleCommentEdit(comment)}>
+                                    <Pencil className='mr-2 h-4 w-4'/>
+                                    Edit
+                                </DropdownMenuItem>
+                            }
+                            {(currentUser._id === comment.owner_details._id) && 
+                                <DropdownMenuItem onSelect={() => handleCommentDelete(comment)}>
+                                    <Trash2 className='mr-2 h-4 w-4'/>
+                                    Delete
+                                </DropdownMenuItem>
+                            }
+                            {(currentUser._id != comment.owner_details._id) && 
+                            <DropdownMenuItem onSelect={handleCommentReport}>
+                                <Flag className='mr-2 h-4 w-4' />
+                                Report
                             </DropdownMenuItem>
+                            }
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
             ))}
         </div>
+        <Toaster />
         </div>
     )
 }

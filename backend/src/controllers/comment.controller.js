@@ -21,12 +21,12 @@ export const getVideoComments = AsyncHandler(async (req, res) => {
 
     const CommentList = await Comment.aggregate([
         {
-            '$match': {
+            $match: {
                 'video': new mongoose.Types.ObjectId(videoId)
             }
         },
         {
-            '$lookup': {
+            $lookup: {
                 from: 'users',
                 localField: 'owner',
                 foreignField: '_id',
@@ -35,6 +35,11 @@ export const getVideoComments = AsyncHandler(async (req, res) => {
         },
         {
             $unwind: '$owner_details',
+        },
+        {
+            $sort: {
+                'createdAt': -1
+            }
         }
     ])
 
@@ -66,10 +71,28 @@ export const addComment = AsyncHandler(async (req, res) => {
 
     if(!newComment) throw new ApiError(500, "Unable to create Comment")
 
+    const populatedComment = await Comment.aggregate([
+        {
+            $match: { _id: new mongoose.Types.ObjectId(newComment._id) }
+        },
+        {
+            $lookup: {
+                from: 'users',
+                localField: 'owner',
+                foreignField: '_id',
+                as: 'owner_details'
+            }
+        },
+        {
+            $unwind: '$owner_details'
+        }
+    ]);
+    
+
     return res
     .status(200)
     .json(
-        new ApiResponse(200, "Comment Added", newComment)
+        new ApiResponse(200, "Comment Added", populatedComment[0])
     )
 })
 

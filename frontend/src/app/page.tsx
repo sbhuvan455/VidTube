@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Link from "next/link";
+import { useUserStore } from "@/store";
 
 interface OwnerDetails {
   _id: string;
@@ -30,6 +31,11 @@ interface Video {
 export default function VideoGrid() {
   const [videos, setVideos] = useState<Video[]>([]);
 
+  const {
+    currentUser,
+    signOut
+  } = useUserStore();
+
   useEffect(() => {
     axios
       .get("/api/v1/videos/")
@@ -39,6 +45,10 @@ export default function VideoGrid() {
       .catch((error) => {
         console.log(error);
       });
+
+      if(!currentUser){
+        signOut();
+      }
   }, []);
 
   return (
