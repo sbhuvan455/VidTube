@@ -19,25 +19,30 @@ export const getVideoComments = AsyncHandler(async (req, res) => {
         limit
     }
 
-    const videoList = await Comment.aggregate([
+    const CommentList = await Comment.aggregate([
         {
-          '$match': {
-            'video': new mongoose.Types.ObjectId(videoId)
-          }
+            '$match': {
+                'video': new mongoose.Types.ObjectId(videoId)
+            }
+        },
+        {
+            '$lookup': {
+                from: 'users',
+                localField: 'owner',
+                foreignField: '_id',
+                as: 'owner_details'
+            }
+        },
+        {
+            $unwind: '$owner_details',
         }
     ])
 
-    Comment.aggregatePaginate(videoList, options, function(err, results) {
-        if(err) {
-            throw new ApiError(500, "Error in aggregate paginate", err)
-        }else {
-            return res
-            .status(200)
-            .json(
-                new ApiResponse(200, "Success", results)
-            )
-        }
-    })
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200, "Success", CommentList)
+    )
 })
 
 export const addComment = AsyncHandler(async (req, res) => {

@@ -118,18 +118,33 @@ export const getVideoById = AsyncHandler(async (req, res) => {
     if(!videoId) {
         throw new ApiError(400, "Video Id Not Found");
     }
-    
-    const video = await Video.findById(videoId);
+
+
+    const video = await Video.aggregate([
+        {
+            $match: {
+                _id: new mongoose.Types.ObjectId(videoId)
+            }
+        },
+        {
+            $lookup: {
+                from: "users",
+                localField: "owner",
+                foreignField: "_id",
+                as: "owner"
+            }
+        }
+    ]);
 
     if(!video) {
         throw new ApiError(404, "Video Not Found");
     }
 
-    req.user.watchHistory.push(video);
-    req.user.save({ validateBeforeSave: false })
+    req.user.watchHistory.push(video[0]);
+    await req.user.save({ validateBeforeSave: false })
 
     video.views++;
-    video.save();
+    await Video.updateOne({ _id: video._id }, { $inc: { views: 1 } });
 
     res.status(200)
     .json(

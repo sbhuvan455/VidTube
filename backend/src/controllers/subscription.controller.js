@@ -84,7 +84,7 @@ export const getUserChannelSubscribers = AsyncHandler(async (req, res) => {
 })
 
 export const getSubscribedChannels = AsyncHandler(async (req, res) => {
-    const { subscriberId } = req.params
+    const subscriberId = req.user?._id
 
     if(!subscriberId){
         throw new ApiError(404, "Subscriber Not Found");
@@ -95,7 +95,15 @@ export const getSubscribedChannels = AsyncHandler(async (req, res) => {
             {
               '$match': {
                 'subscriber': new mongoose.Types.ObjectId(subscriberId)
-              }
+              },
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "channel",
+                    foreignField: "_id",
+                    as: "owner"
+                }
             }
         ]
     )
@@ -109,4 +117,25 @@ export const getSubscribedChannels = AsyncHandler(async (req, res) => {
     .json(
         new ApiResponse(200, "Channels Found", Channels)
     )
+})
+
+export const isChannelSubscribed = AsyncHandler(async (req, res) => {
+    const { channelId } = req.params;
+
+    if(!channelId) throw new ApiError(400, "Invalid request");
+
+    const user = req.user;
+    if(!user) throw new ApiError(400, "Access token not found");
+
+
+    const channel = await Subscription.findOne({ 
+        subscriber: new mongoose.Types.ObjectId(user._id),
+        channel: new mongoose.Types.ObjectId(channelId)
+    })
+
+    const isSubscribed = (channel) ? true : false;
+
+    return res
+            .status(200)
+            .json(new ApiResponse(200, "Success", { isSubscribed }))
 })

@@ -6,6 +6,7 @@ import { AsyncHandler } from "../utils/AsyncHandler.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
 import { Tweet } from "../models/tweet.model.js"
 import { Comment } from "../models/comment.model.js"
+import { Dislike } from "../models/dislike.model.js"
 
 export const toggleVideoLike = AsyncHandler(async (req, res) => {
     const {videoId} = req.params
@@ -147,4 +148,26 @@ export const getLikedVideos = AsyncHandler(async (req, res) => {
     .json(
         new ApiResponse(200, "Liked Videos Successfully", likedVideos)
     )
+})
+
+export const getLikesAndDislikes = AsyncHandler(async (req, res) => {
+    const { videoId } = req.params;
+
+    if(!videoId) throw new ApiError(400, "Invalid request");
+    
+    const likes = await Like.find({video: new mongoose.Types.ObjectId(videoId)});
+    if(!likes) throw new ApiError(500, "Unable to find likes");
+
+    const numberOfLikes = likes.length;
+
+    const dislikes = await Dislike.find({video: videoId});
+    if(!dislikes) throw new ApiError(400, "Unable to find dislikes");
+
+    const numberOfDislikes = dislikes.length;
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, "fetched likes and dislikes", { numberOfLikes, numberOfDislikes })
+        )
 })
