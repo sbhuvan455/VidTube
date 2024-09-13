@@ -9,6 +9,11 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import Link from "next/link"
 import axios from "axios"
+import { Toaster } from "@/components/ui/toaster"
+import { toast } from "@/hooks/use-toast"
+import { useUserStore } from "@/store"
+import { useRouter } from "next/navigation"
+
 
 export default function LoginPage() {
     const [showPassword, setShowPassword] = useState(false)
@@ -18,6 +23,14 @@ export default function LoginPage() {
         password: "",
     })
 
+    const router = useRouter()
+    
+    const {
+        signInStart,
+        signInSuccess,
+        signInFailure,
+    } = useUserStore();
+
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
         setFormData((prev) => ({ ...prev, [name]: value }))
@@ -25,12 +38,20 @@ export default function LoginPage() {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
+        signInStart()
+
         axios.post('/api/v1/users/login', formData)
             .then((response) => {
                 console.log(response);
+                signInSuccess(response.data.data)
+                router.push('/');
             })
             .catch((error) => {
-                console.log(error);
+                console.log(error.response.data.message);
+                toast({
+                    title: error.response.data.message
+                })
+                signInFailure(error.response.data)
             })
     }
 
@@ -157,6 +178,7 @@ export default function LoginPage() {
                 </p>
                 </CardFooter>
             </Card>
+            <Toaster />
         </div>
     )
 }
