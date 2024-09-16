@@ -317,7 +317,7 @@ export default function VideoStreamingPage() {
             <div className="flex items-center space-x-4">
                 <Avatar className="h-12 w-12">
                     <AvatarImage src={video?.owner[0].avatar} alt="Channel Avatar" />
-                    <AvatarFallback>CN</AvatarFallback>
+                    <AvatarFallback>{video?.owner[0].fullname[0]}</AvatarFallback>
                 </Avatar>
                 <div>
                     <h2 className="font-semibold">{video?.owner[0].fullname}</h2>

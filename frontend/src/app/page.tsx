@@ -13,6 +13,7 @@ interface OwnerDetails {
   _id: string;
   fullname: string;
   avatar: string;
+  username: string;
 }
 
 interface Video {
@@ -72,15 +73,15 @@ export default function VideoGrid() {
               <div className="flex items-start space-x-3">
                 <Avatar className="h-9 w-9">
                   <AvatarImage src={video.ownerDetails[0]?.avatar} />
-                  <AvatarFallback>U</AvatarFallback>
+                  <AvatarFallback>{video.ownerDetails[0]?.fullname[0]}</AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
                   <h2 className="text-lg font-semibold leading-tight truncate">
                     {video.title}
                   </h2>
-                  <p className="text-sm text-muted-foreground mt-1">
+                  <Link href={`/c/${video.ownerDetails[0]?.username}`} className="text-sm text-muted-foreground mt-1">
                     {video.ownerDetails[0]?.fullname || "Unknown User"}
-                  </p>
+                  </Link>
                   <p className="text-xs text-muted-foreground mt-1">
                     {formatViews(video.views)} views • {video.createdAt}
                   </p>

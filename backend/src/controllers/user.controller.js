@@ -243,7 +243,7 @@ export const getUserChannelProfile = AsyncHandler(async (req, res) => {
     const channel = await User.aggregate([
         {
             $match: {
-                username: username.toLoverCase()
+                username: username.toLowerCase()
             }
         },
         {
@@ -267,14 +267,14 @@ export const getUserChannelProfile = AsyncHandler(async (req, res) => {
         {
             $addFields: {
                 SubscribersCount: {
-                    $size: "$Subscribers "
+                    $size: "$Subscribers"
                 },
                 ChannelsSubscribedTo: {
                     $size: "$SubscribedTo"
                 },
                 isSubscribed: {
                     $cond: {
-                        if: {$in: [req.user?._id, "Subscribers.subscriber"]},
+                        if: {$in: [req.user?._id, "$Subscribers.subscriber"]},
                         then: true,
                         else: false
                     }
@@ -288,7 +288,9 @@ export const getUserChannelProfile = AsyncHandler(async (req, res) => {
                 fullname: 1,
                 SubscribersCount: 1,
                 ChannelsSubscribedTo: 1,
-                isSubscribed: 1
+                isSubscribed: 1,
+                avatar: 1,
+                coverImage: 1
             }
         }
     ])

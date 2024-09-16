@@ -253,3 +253,23 @@ export const togglePublishStatus = AsyncHandler(async (req, res) => {
         new ApiResponse(200, "Successfully updated", video)
     )
 })
+
+export const getChannelVideosById =  AsyncHandler(async (req, res) => {
+    const { channelId } = req.params;
+
+    if(!channelId) throw new ApiError(400, "channelId is required");
+
+    const videos = await Video.aggregate([
+        {
+            $match: {
+                owner: new mongoose.Types.ObjectId(channelId)
+            }
+        },
+    ])
+
+    if(!videos || videos.length === 0) throw new ApiError(404, "No videos were found");
+
+    res.status(200).json(
+        new ApiResponse(200, "Successfully fetched", videos)
+    )
+})
