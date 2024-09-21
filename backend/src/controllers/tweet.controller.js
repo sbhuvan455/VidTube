@@ -105,3 +105,38 @@ export const deleteTweet = AsyncHandler(async (req, res) => {
         new ApiResponse(200, "tweet deleted successfully", deletedTweet)
     )
 })
+
+export const getTweetById = AsyncHandler(async (req, res) => {
+    const { tweetId } = req.params
+
+    if(!tweetId){
+        throw new ApiError(404, "Tweet not found")
+    }
+
+    const tweet = await Tweet.aggregate([
+        {
+            '$match': {
+                _id: new mongoose.Types.ObjectId(tweetId)
+            }
+        },
+        {
+            '$lookup': {
+                from: 'users',
+                localField: 'owner',
+                foreignField: '_id',
+                as: 'ownerDetails'
+            }
+        },
+        {
+            $unwind: {
+                path: '$ownerDetails'
+            }
+        }
+    ])
+
+    if(!tweet) throw new ApiError(404, "Post not found")
+
+    res.status(200).json(
+        new ApiResponse(200, "Post fetched successfully", tweet)
+    )
+})

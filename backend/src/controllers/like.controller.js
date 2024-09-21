@@ -253,3 +253,25 @@ export const getLikesAndDislikes = AsyncHandler(async (req, res) => {
             new ApiResponse(200, "fetched likes and dislikes", { numberOfLikes, numberOfDislikes })
         )
 })
+
+export const getTweetLikesAndDislikes = AsyncHandler(async (req, res) => {
+    const { tweetId } = req.params;
+
+    if(!tweetId) throw new ApiError(400, "Invalid request");
+    
+    const likes = await Like.find({tweet: new mongoose.Types.ObjectId(tweetId)});
+    if(!likes) throw new ApiError(500, "Unable to find likes");
+
+    const numberOfLikes = likes.length;
+
+    const dislikes = await Dislike.find({tweet: new mongoose.Types.ObjectId(tweetId)});
+    if(!dislikes) throw new ApiError(400, "Unable to find dislikes");
+
+    const numberOfDislikes = dislikes.length;
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, "fetched likes and dislikes", { numberOfLikes, numberOfDislikes })
+        )
+})

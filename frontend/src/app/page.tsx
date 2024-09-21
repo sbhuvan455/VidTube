@@ -83,7 +83,7 @@ export default function VideoGrid() {
                     {video.ownerDetails[0]?.fullname || "Unknown User"}
                   </Link>
                   <p className="text-xs text-muted-foreground mt-1">
-                    {formatViews(video.views)} views • {video.createdAt}
+                    {formatViews(video.views)} views • {new Date(video.createdAt).toLocaleDateString()}
                   </p>
                 </div>
               </div>

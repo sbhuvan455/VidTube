@@ -6,7 +6,7 @@ import { AsyncHandler } from "../utils/AsyncHandler.js";
 import { Video } from "../models/video.models.js";
 
 export const createPlaylist = AsyncHandler(async (req, res) => {
-    const {name, description} = req.body
+    const {name, description, thumbnail} = req.body
 
     if(!name) {
         throw new ApiError(410, "Please provide a name fro the playist");
@@ -15,13 +15,26 @@ export const createPlaylist = AsyncHandler(async (req, res) => {
     const owner = req.user._id;
 
     if(!owner) throw new ApiError(400, "Cannot get user");
+    let newPlaylist;
 
-    const newPlaylist = await Playlist.create({
-        name,
-        description: description || "",
-        videos: [],
-        owner
-    })
+    if(thumbnail){
+        newPlaylist = await Playlist.create({
+            name,
+            description: description || "",
+            videos: [],
+            thumbnail,
+            owner
+        })
+
+    }else{
+        newPlaylist = await Playlist.create({
+            name,
+            description: description || "",
+            videos: [],
+            owner
+        })
+
+    }
 
     if(!newPlaylist) throw new ApiError(500, "Unable to create the PLaylist");
 
@@ -55,7 +68,21 @@ export const getPlaylistById = AsyncHandler(async (req, res) => {
     
     if(!playlistId) throw new ApiError(400, "playlistId not found");
 
-    const playlist = await Playlist.findById(playlistId)
+    const playlist = await Playlist.aggregate([
+        {
+            '$match': {
+                _id: new mongoose.Types.ObjectId(playlistId)
+            }
+        },
+        {
+            '$lookup': {
+                from: "videos",
+                localField: "videos",
+                foreignField: "_id",
+                as: "videos"
+            }
+        }
+    ])
 
     if(!playlist) throw new ApiError(404, "No Playlist found with this Id")
 

@@ -4,10 +4,11 @@ import { Video } from "../models/video.models.js"
 import { ApiError } from "../utils/ApiError.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
 import { AsyncHandler } from "../utils/AsyncHandler.js"
+import { Tweet } from "../models/tweet.model.js"
 
 export const getVideoComments = AsyncHandler(async (req, res) => {
     const { videoId } = req.params
-    const { page = 1, limit = 10 } = req.query
+    const { page = 1, limit = 100 } = req.query
 
     if(!videoId) throw new ApiError(400, "videoId not found")
     const video = await Video.findById(videoId)
@@ -142,4 +143,86 @@ export const deleteComment = AsyncHandler(async (req, res) => {
             new ApiResponse(200, "Comment deleted successfully", deletedComment)
         )
 
+})
+
+export const getTweetComments = AsyncHandler(async (req, res) => {
+    const { tweetId } = req.params;
+
+    if(!tweetId) throw new ApiError(400, "tweetId is required");
+
+    const comments = await Comment.aggregate([
+        {
+            '$match': {
+                tweet: new mongoose.Types.ObjectId(tweetId)
+            }
+        },
+        {
+            '$lookup': {
+                from: 'users',
+                localField: 'owner',
+                foreignField: '_id',
+                as: 'ownerDetails'
+            }
+        },
+        {
+            '$unwind': '$ownerDetails',
+        },
+        {
+            $sort: {
+                'createdAt': -1
+            }
+        }
+    ])
+
+    if(!comments) throw new ApiError(400, "tweet comments not found");
+
+    res.status(200).json(
+        new ApiResponse(200, "comments fetched successfully", comments)
+    )
+})
+
+export const addTweetComment = AsyncHandler(async (req, res) => {
+    const { tweetId } = req.params;
+    const { comment } = req.body;
+
+    if(!tweetId) throw new ApiError(400, "No Tweet ID provided")
+    if(!comment) throw new ApiError(400, "comment not Provided from the user")
+    
+    const tweet = await Tweet.findById(tweetId);
+    if(!tweet) throw new ApiError(400, "Tweet not Found")
+
+    const user = req.user._id;
+    if(!user) throw new ApiError(400, "User not Authenticated")
+
+    const newComment = await Comment.create({
+        content: comment,
+        tweet: new mongoose.Types.ObjectId(tweetId),
+        owner: new mongoose.Types.ObjectId(user)
+    })
+
+    if(!newComment) throw new ApiError(500, "Unable to create Comment")
+
+    const populatedComment = await Comment.aggregate([
+        {
+            $match: { _id: new mongoose.Types.ObjectId(newComment._id) }
+        },
+        {
+            $lookup: {
+                from: 'users',
+                localField: 'owner',
+                foreignField: '_id',
+                as: 'ownerDetails'
+            }
+        },
+        {
+            $unwind: '$ownerDetails'
+        }
+    ]);
+    
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200, "Comment Added", populatedComment[0])
+    )
 })

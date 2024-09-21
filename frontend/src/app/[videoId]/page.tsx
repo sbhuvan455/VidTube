@@ -12,6 +12,8 @@ import axios from 'axios'
 import { useUserStore } from '@/store'
 import { Toaster } from "@/components/ui/toaster"
 import { useToast } from "@/hooks/use-toast"
+import Link from 'next/link'
+import { LoadingBar } from '@/components/LoadingBar'
 
 
 interface Owner {
@@ -301,6 +303,7 @@ export default function VideoStreamingPage() {
 
     return (
         <div className="container mx-auto px-4 py-8">
+        <LoadingBar />
         <div className="aspect-w-16 aspect-h-9 mb-4">
             <video 
                 src={video?.videoFile} 
@@ -320,7 +323,7 @@ export default function VideoStreamingPage() {
                     <AvatarFallback>{video?.owner[0].fullname[0]}</AvatarFallback>
                 </Avatar>
                 <div>
-                    <h2 className="font-semibold">{video?.owner[0].fullname}</h2>
+                    <Link href={`/c/${video?.owner[0].username}`} className="font-semibold">{video?.owner[0].fullname}</Link>
                     <p className="text-sm text-muted-foreground">{subscribers} subscribers</p>
                 </div>
             </div>

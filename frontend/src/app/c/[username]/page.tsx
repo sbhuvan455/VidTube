@@ -2,12 +2,15 @@
 
 import axios from "axios";
 import { useParams } from "next/navigation"
+import Image from 'next/image'
 import { useEffect, useState } from "react";
+import { PlayIcon } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from 'next/link'
+import { useRouter } from "next/navigation";
 
 interface Owner {
     _id: string;
@@ -45,6 +48,7 @@ interface Playlist {
     owner: string;
     createdAt: string;
     updatedAt: string;
+    thumbnail: string;
     __v: number;
 }
 
@@ -66,6 +70,7 @@ export default function ChannelHomePage(){
     const [isLoading, setIsLoading] = useState<boolean>(true)
 
     const { username } = useParams();
+    const router = useRouter();
 
     useEffect(() => {
         const fetchDetails = async () => {
@@ -208,12 +213,24 @@ export default function ChannelHomePage(){
                 <TabsContent value="posts">
                     <div className="space-y-4">
                     {posts?.map((post) => (
-                        <Card key={post._id}>
+                        <Card key={post._id} onClick={() => router.push(`/post/${post._id}`)} className="cursor-pointer"> 
                         <CardContent className="pt-4">
-                            <p>{post.content}</p>
-                            <p className="text-sm text-muted-foreground mt-2">
-                            {new Date(post.createdAt).toLocaleDateString()}
-                            </p>
+                            <div className="my-4 flex items-center gap-3">
+                                <Avatar className="w-7 h-7">
+                                    <AvatarImage src={owner.avatar} />
+                                    <AvatarFallback>{owner.fullname[0]}</AvatarFallback>
+                                </Avatar>
+
+                                <div className="font-semibold">
+                                    {owner.fullname}
+                                </div>
+                            </div>
+                            <div>
+                                <p>{post.content}</p>
+                                <p className="text-sm text-muted-foreground mt-2">
+                                {new Date(post.createdAt).toLocaleDateString()}
+                                </p>
+                            </div>
                         </CardContent>
                         </Card>
                     ))}
@@ -221,7 +238,40 @@ export default function ChannelHomePage(){
                 </TabsContent>
                 <TabsContent value="playlists">
                     <div className="text-center py-8">
-                    <p className="text-muted-foreground">Playlist section coming soon...</p>
+                    {(!playlists || (playlists.length === 0)) ? <p className="text-muted-foreground">Playlist section coming soon...</p>:
+                    <div>
+                    <h1 className="text-xl font-bold mb-6">Created playlists</h1>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {playlists?.map((playlist) => (
+                        <Card key={playlist._id} className="bg-white overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
+                            <div className="relative aspect-video group">
+                            <img
+                                src={playlist.thumbnail}
+                                alt={playlist.name}
+                                className="transition-transform duration-300 group-hover:scale-105 object-cover"
+                            />
+                            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-opacity duration-300 flex items-center justify-center cursor-pointer" onClick={() => router.push(`/playlist/${playlist._id}`)}>
+                                <PlayIcon className="text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" size={48}  />
+                            </div>
+                            <div className="absolute bottom-2 right-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded-full text-sm font-medium">
+                                {playlist.videos.length} {playlist.videos.length === 1 ? 'video' : 'videos'}
+                            </div>
+                            </div>
+                            <CardContent className="p-4">
+                            <h2 className="text-xl font-semibold text-gray-800 mb-2 line-clamp-1">{playlist.name}</h2>
+                            <p className="text-sm text-gray-600 mb-4 line-clamp-2">{playlist.description}</p>
+                            <Link 
+                                href={`/playlist/${playlist._id}`} 
+                                className="text-blue-600 hover:text-blue-800 font-medium text-sm transition-colors duration-200"
+                            >
+                                View playlist
+                            </Link>
+                            </CardContent>
+                        </Card>
+                        ))}
+                    </div>
+                    </div>
+                    }
                     </div>
                 </TabsContent>
                 </Tabs>

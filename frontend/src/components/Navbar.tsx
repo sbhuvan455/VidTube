@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { Play, Search, Menu, X, Clock, Users, Home, Tv2, Settings, LogOut } from "lucide-react"
+import { Play, Search, Menu, X, Clock, Users, Home, Tv2, Settings, TextSelect, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -92,8 +92,8 @@ export default function Navbar() {
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem>
-                        <Settings className="mr-2 h-4 w-4" />
-                        <span>Settings</span>
+                        <TextSelect className="mr-2 h-4 w-4" />
+                        <span>Dashboard</span>
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={handleSignOut}>
                         <LogOut className="mr-2 h-4 w-4" />
