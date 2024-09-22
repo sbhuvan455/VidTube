@@ -26,8 +26,15 @@ export const getChannelStats = AsyncHandler(async (req, res) => {
                 $lookup: {
                   from: "likes",
                   localField: "_id",
-                  foreignField: "likedBy",
+                  foreignField: "video",
                   as: "likes"
+                }
+              },
+              {
+                $addFields: {
+                  totalLikes: {
+                    $size: "$likes"
+                  }
                 }
               }
             ]
@@ -54,13 +61,13 @@ export const getChannelStats = AsyncHandler(async (req, res) => {
               $size: "$videos"
             },
             totalLikes: {
-              $sum: "$videos.likes"
+              $sum: "$videos.totalLikes"
             }
           }
         },
         {
           $project: {
-              totalVideoViews: 1,
+            totalVideoViews: 1,
             totalSubscribers: 1,
             totalVideos: 1,
             totalLikes: 1  
