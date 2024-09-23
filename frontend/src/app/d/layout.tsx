@@ -45,7 +45,7 @@ export default function DashboardLayout({
 
     return (
         <div className="flex h-screen bg-gray-100">
-            <div ref={sidebarRef} className={`bg-white shadow-md fixed h-full z-10 transition-all duration-300 ${isSidebarOpen ? 'w-64' : 'hidden'} lg:w-64`}>
+            <div ref={sidebarRef} className={`bg-white shadow-md fixed h-full z-10 transition-all duration-300 md:w-64 md:block ${isSidebarOpen ? 'w-64' : 'hidden'}`}>
                 <div className="p-4 text-center">
                     <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden">
                         <img

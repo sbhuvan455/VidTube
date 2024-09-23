@@ -96,7 +96,7 @@ export const getChannelVideos = AsyncHandler(async (req, res) => {
         }
     ])
 
-    if(!videos.length <= 0) throw new ApiError(404, "No videos found");
+    if(videos.length <= 0) throw new ApiError(404, "No videos found");
 
     return res
         .status(200)
