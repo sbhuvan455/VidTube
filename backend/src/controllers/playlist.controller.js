@@ -4,13 +4,16 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { AsyncHandler } from "../utils/AsyncHandler.js";
 import { Video } from "../models/video.models.js";
+import { uploadOnCloudinary } from "../utils/Cloudinary.js";
 
 export const createPlaylist = AsyncHandler(async (req, res) => {
-    const {name, description, thumbnail} = req.body
+    const {name, description} = req.body
 
     if(!name) {
         throw new ApiError(410, "Please provide a name fro the playist");
     }
+
+    const thumbnail = req.file?.path;
 
     const owner = req.user._id;
 
@@ -18,11 +21,14 @@ export const createPlaylist = AsyncHandler(async (req, res) => {
     let newPlaylist;
 
     if(thumbnail){
+
+        const thumbnailPublished = await uploadOnCloudinary(thumbnail)
+
         newPlaylist = await Playlist.create({
             name,
             description: description || "",
             videos: [],
-            thumbnail,
+            thumbnail: thumbnailPublished.url,
             owner
         })
 
