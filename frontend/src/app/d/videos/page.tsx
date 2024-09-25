@@ -88,7 +88,7 @@ export default function Videos() {
         <div className="container mx-auto px-4 py-8">
             <div className="flex justify-between items-center mb-6">
                 <h1 className="md:text-3xl text-2xl md:font-bold">Your Videos</h1>
-                <Link href="/c/uploadvideo">
+                <Link href="/n/uploadvideo">
                     <Button>
                         <PlusCircle className="mr-2 h-4 w-4" /> Upload New Video
                     </Button>

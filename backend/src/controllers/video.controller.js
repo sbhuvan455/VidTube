@@ -55,6 +55,12 @@ export const getAllVideos = AsyncHandler(async (req, res) => {
         }
     });
 
+    pipeline.push({
+        $match: {
+            isPublished: true
+        }
+    });
+
     const videos = await Video.aggregate(pipeline);
 
     if (!videos || videos.length === 0) {

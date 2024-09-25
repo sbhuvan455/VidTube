@@ -3,6 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { AsyncHandler } from "../utils/AsyncHandler.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { Video } from "../models/video.models.js";
+import { Tweet } from "../models/tweet.model.js";
 import mongoose from "mongoose";
 
 export const getChannelStats = AsyncHandler(async (req, res) => {
@@ -103,4 +104,55 @@ export const getChannelVideos = AsyncHandler(async (req, res) => {
         .json(
             new ApiResponse(200, "Videos Found", videos)
         )
+})
+
+export const getChannelTweets = AsyncHandler(async (req, res) => {
+  const userId = req.user._id;
+
+    if(!userId){
+        throw new ApiError(400, "User is not authorized");
+    }
+
+    const requiredTweets = await Tweet.aggregate([
+        {
+            $match: {
+                owner: new mongoose.Types.ObjectId(userId)
+            }
+        },
+        {
+          $lookup: {
+            from: 'likes',
+            localField: '_id',
+            foreignField: 'tweet',
+            as: 'likes'
+          }
+        },
+        {
+          $lookup: {
+            from: 'dislikes',
+            localField: '_id',
+            foreignField: 'tweet',
+            as: 'dislikes'
+          }
+        },
+        {
+          $addFields: {
+            totalLikes: {
+              $size: '$likes'
+            },
+            totalDislikes: {
+              $size: '$dislikes'
+            }
+          }
+        }
+    ])
+
+    if(requiredTweets.length === 0){
+        throw new ApiError(404, "No Tweets Found");
+    }
+
+    res.status(200)
+    .json(
+        new ApiResponse(200, "Tweets fetched successfully", requiredTweets)
+    )
 })
