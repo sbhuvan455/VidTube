@@ -4,6 +4,7 @@ import { AsyncHandler } from "../utils/AsyncHandler.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { Video } from "../models/video.models.js";
 import { Tweet } from "../models/tweet.model.js";
+import { Playlist } from "../models/playlist.model.js";
 import mongoose from "mongoose";
 
 export const getChannelStats = AsyncHandler(async (req, res) => {
@@ -155,4 +156,25 @@ export const getChannelTweets = AsyncHandler(async (req, res) => {
     .json(
         new ApiResponse(200, "Tweets fetched successfully", requiredTweets)
     )
+})
+
+export const getChannelPlaylists = AsyncHandler(async (req, res) => {
+  const userId = req.user._id;
+
+  if(!userId){
+    throw new ApiError(400, "User is not authorized");
+  }
+
+  const playlist = await Playlist.find({
+      owner: new mongoose.Types.ObjectId(userId)
+  })
+
+  if(playlist.length < 1) throw new ApiError(404, "No Playlist found");
+
+  return res
+  .status(200)
+  .json(
+      new ApiResponse(200, "Playlist found successfully", playlist)
+  )
+
 })
