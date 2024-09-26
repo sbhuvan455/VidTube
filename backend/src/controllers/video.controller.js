@@ -146,11 +146,16 @@ export const getVideoById = AsyncHandler(async (req, res) => {
         throw new ApiError(404, "Video Not Found");
     }
 
-    req.user.watchHistory.push(video[0]);
-    await req.user.save({ validateBeforeSave: false })
+    await Video.findByIdAndUpdate(videoId, { $inc: { views: 1 } });
 
-    video.views++;
-    await Video.updateOne({ _id: video._id }, { $inc: { views: 1 } });
+    const isInWatchHistory = req.user.watchHistory.some(
+        (historyVideoId) => historyVideoId.toString() === video[0]._id.toString()
+    );
+
+    if (!isInWatchHistory) {
+        req.user.watchHistory.push(video[0]._id);
+        await req.user.save({ validateBeforeSave: false })
+    }
 
     res.status(200)
     .json(

@@ -6,8 +6,9 @@ import axios from "axios"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { MoreVerticalIcon, UsersIcon } from "lucide-react"
 import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 
-export interface Subscription {
+interface Subscription {
   _id: string;
   subscriber: string;
   channel: string;
@@ -20,6 +21,8 @@ export interface Subscription {
 export default function Component() {
 
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([])
+
+  const router = useRouter();
 
   useEffect(() => {
     const fetchDetails = async() => {
@@ -39,6 +42,7 @@ export default function Component() {
       await axios.post(`/api/v1/subscriptions/c/${channelId}`)
                   .then((response) => {
                       console.log(response)
+                      setSubscriptions(subscriptions.filter((subscription) => subscription.owner[0]._id !== channelId))
                   })
                   .catch((error) => {
                       console.log(error)
@@ -57,10 +61,6 @@ export default function Component() {
             </Avatar>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium truncate">{channel.owner[0].fullname}</p>
-              <p className="text-sm text-muted-foreground flex items-center">
-                <UsersIcon className="h-3 w-3 mr-1" />
-                1.2 M subscribers
-              </p>
             </div>
             <div className="flex items-center space-x-2">
             <DropdownMenu>
@@ -74,7 +74,7 @@ export default function Component() {
                   <DropdownMenuItem onSelect={() => handleUnsubscribe(channel.owner[0]._id)}>
                     Unsubscribe
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => router.push(`/c/${channel.owner[0].username}`)}>
                     View Channel
                   </DropdownMenuItem>
                 </DropdownMenuContent>
