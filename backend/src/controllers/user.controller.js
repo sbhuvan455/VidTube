@@ -49,42 +49,44 @@ export const RegisterUser = AsyncHandler(async (req, res) => {
         throw new ApiError(409, "User Already Exists");
     }
 
-    const avatarLocalStorage = req.files?.avatar[0]?.path;
+    const avatarLocalStorage = req.files?.avatar?.[0]?.path;
+    const coverImgLocalStorage = req.files?.coverImage?.[0]?.path;
 
-    if(!avatarLocalStorage){
-        throw new ApiError(409, "Avatar not found");
-    }
-
-    const coverImgLocalStorage = req.files?.coverImage[0]?.path;
-
-    const avatar = await uploadOnCloudinary(avatarLocalStorage);
-    const coverImage = await uploadOnCloudinary(coverImgLocalStorage);
-
-    if(!avatar) throw new ApiError(500, "Cloudinary avatar not found");
+    const avatar = (avatarLocalStorage) ? await uploadOnCloudinary(avatarLocalStorage) : undefined;
+    const coverImage = (coverImgLocalStorage) ? await uploadOnCloudinary(coverImgLocalStorage) : undefined;
 
     const currentUser = await User.create({
         username,
         email,
         password,
         fullname,
-        avatar: avatar.url,
-        coverImage: coverImage.url
+        avatar: avatar?.url,
+        coverImage: coverImage?.url
     })
 
     if(!currentUser){
         throw new ApiError(500, "Something went wrong while creating the new user");
     }
 
-    return res.status(201).json(
-        new ApiResponse(200, "Success")
+    const { access_token, refresh_token } = await generateAccessAndRefreshToken(currentUser._id);
+
+    const options = {
+        httpOnly: true,
+        secure: true
+    }
+
+    return res
+    .status(200)
+    .cookie("AccessToken", access_token, options)
+    .cookie("RefreshToken", refresh_token, options)
+    .json(
+        new ApiResponse(200, "successfully logged in", currentUser)
     )
     
 })
 
 export const LoginUser = AsyncHandler(async (req, res) => {
-    console.log("I am here");
     const { username, email, password } = req.body;
-    console.log(username, password)
 
     if(!email && !username) {
         throw new ApiError(401, "Enter your username or email");

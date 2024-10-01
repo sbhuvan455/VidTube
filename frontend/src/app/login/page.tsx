@@ -72,7 +72,7 @@ export default function LoginPage() {
                             <p className="text-muted-foreground">
                                 Join our community of content creators and viewers today!
                             </p>
-                            <Button variant="outline" className="w-full">
+                            <Button variant="outline" className="w-full" onClick={() => router.push('/register')}>
                                 Create an Account
                             </Button>
                         </div>

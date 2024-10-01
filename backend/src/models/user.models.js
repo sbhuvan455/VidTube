@@ -32,11 +32,11 @@ const userSchema = new Schema({
 
     avatar: {
         type: String,
-        required: true,
     },
 
     coverImage: {
         type: String,
+        default: 'https://via.placeholder.com/600x200.png?text=Cover+Image',
     },
 
     refreshTokens: {

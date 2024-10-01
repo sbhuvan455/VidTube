@@ -19,6 +19,7 @@ import { useUserStore } from "@/store"
 
 export default function Navbar() {
 
+    const [query, setQuery] = useState<string>('')
     const router = useRouter()
 
     const {
@@ -39,6 +40,13 @@ export default function Navbar() {
         router.push('/d/dashboard')
     }
 
+    const handleSubmit = (e: any) => {
+        e.preventDefault();
+
+        console.log("I am here")
+        router.push(`/search?query=${query}`)
+    }
+
     return (
         <nav className="bg-background border-b sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -55,11 +63,16 @@ export default function Navbar() {
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <Search className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
                     </div>
-                    <Input
-                    type="search"
-                    placeholder="Search videos"
-                    className="block w-full pl-10 pr-3 py-2 border border-input rounded-md leading-5 bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary sm:text-sm"
-                    />
+
+                    <form onSubmit={handleSubmit}>
+                        <Input
+                        type="search"
+                        placeholder="Search videos"
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                        className="block w-full pl-10 pr-3 py-2 border border-input rounded-md leading-5 bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary sm:text-sm"
+                        />
+                    </form>
                 </div>
                 </div>
             </div>
@@ -86,11 +99,11 @@ export default function Navbar() {
                         <Users className="mr-2 h-4 w-4" />
                         <span>Subscriptions</span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => router.push('/history')}>
                         <Clock className="mr-2 h-4 w-4" />
                         <span>History</span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => router.push('/library')}>
                         <Tv2 className="mr-2 h-4 w-4" />
                         <span>Library</span>
                     </DropdownMenuItem>
