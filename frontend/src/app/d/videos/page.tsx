@@ -75,7 +75,7 @@ export default function Videos() {
         return (
             <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
                 <p className="text-xl mb-4">You have no videos to show!</p>
-                <Link href="/c/uploadvideo">
+                <Link href="/n/uploadvideo">
                     <Button>
                         <PlusCircle className="mr-2 h-4 w-4" /> Upload New Video
                     </Button>

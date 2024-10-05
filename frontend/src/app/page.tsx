@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import Link from "next/link";
 import { useUserStore } from "@/store";
+import { Skeleton } from "@/components/ui/skeleton"
 
 interface OwnerDetails {
   _id: string;
@@ -51,6 +52,18 @@ export default function VideoGrid() {
         signOut();
       }
   }, []);
+
+  if(!videos || videos.length === 0){
+    return (
+      <div className="w-[90vw] h-[80vh] mx-auto my-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {[...Array(8)].map((_, i) => {
+          return (
+              <Skeleton key={i} className="h-[350px] w-[300px]"/>
+          )
+        })}
+      </div>
+    )
+  }
 
   return (
     <div className="container mx-auto p-4">

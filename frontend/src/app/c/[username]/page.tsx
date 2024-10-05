@@ -238,7 +238,7 @@ export default function ChannelHomePage(){
                 </TabsContent>
                 <TabsContent value="playlists">
                     <div className="text-center py-8">
-                    {(!playlists || (playlists.length === 0)) ? <p className="text-muted-foreground">Playlist section coming soon...</p>:
+                    {(!playlists || (playlists.length === 0)) ? <p className="text-muted-foreground">No playlist created yet</p>:
                     <div>
                     <h1 className="text-xl font-bold mb-6">Created playlists</h1>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

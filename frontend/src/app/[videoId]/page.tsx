@@ -301,6 +301,22 @@ export default function VideoStreamingPage() {
         getNumberOfSubscribers();
     }, [video])
 
+    if(!currentUser){
+        return (
+            <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+                <div className="text-center p-8 bg-white rounded-lg shadow-md">
+                <h2 className="text-2xl font-bold mb-4">Login Required</h2>
+                <p className="mb-6 text-gray-600">Please log in to view the video.</p>
+                <Button asChild>
+                    <Link href="/login">
+                    Go to Login
+                    </Link>
+                </Button>
+                </div>
+            </div>
+        )
+    }
+
     return (
         <div className="container mx-auto px-4 py-8">
         <LoadingBar />
