@@ -1,8 +1,8 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import Link from "next/link"
-import { Play, Search, Menu, X, Clock, Users, Home, Tv2, Settings, LayoutDashboard, LogOut } from "lucide-react"
+import { Play, Search, Clock, Users, Tv2, LayoutDashboard, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -40,7 +40,7 @@ export default function Navbar() {
         router.push('/d/dashboard')
     }
 
-    const handleSubmit = (e: any) => {
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         console.log("I am here")

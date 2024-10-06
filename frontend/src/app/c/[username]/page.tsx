@@ -2,7 +2,6 @@
 
 import axios from "axios";
 import { useParams } from "next/navigation"
-import Image from 'next/image'
 import { useEffect, useState } from "react";
 import { PlayIcon } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -72,6 +71,8 @@ export default function ChannelHomePage(){
     const { username } = useParams();
     const router = useRouter();
 
+    console.log(activeTab);
+
     useEffect(() => {
         const fetchDetails = async () => {
             await axios.get(`/api/v1/users/c/${username}`)
@@ -115,7 +116,7 @@ export default function ChannelHomePage(){
                             setPosts(response.data.data);
                         })
                         .catch((error) => {
-                            console.log('error');
+                            console.log(error);
                         })
         }
 

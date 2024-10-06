@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { ThumbsUp, ThumbsDown, MessageCircle, Share2, MoreVertical, Smile, MoreVerticalIcon, Pencil, Flag, Trash2 } from "lucide-react"
+import { ThumbsUp, ThumbsDown, Share2, Smile, MoreVerticalIcon, Pencil, Flag, Trash2 } from "lucide-react"
 import EmojiPicker from 'emoji-picker-react'
 import axios from 'axios';
 import { useUserStore } from '@/store'
@@ -67,6 +67,16 @@ function PostPage() {
     const { toast } = useToast();
 
     const handleAddComment = async () => {
+
+        if(!currentUser){
+            toast({
+                title: "Cannot comment on the post without login!",
+                description: "Login or create a new account to access the comment"
+            });
+
+            return;
+        }
+
         if (!newComment.trim()) {
             toast({
                 title: "Comment cannot be empty",
@@ -93,7 +103,7 @@ function PostPage() {
             });
     }
 
-    const handleEmojiClick = (emojiObject: any) => {
+    const handleEmojiClick = (emojiObject: { emoji: string }) => {
         setNewComment(prevComment => prevComment + emojiObject.emoji)
     }
 
@@ -362,19 +372,19 @@ function PostPage() {
                         </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align='end'>
-                            {(currentUser._id === comment.ownerDetails._id) && 
+                            {(currentUser?._id === comment.ownerDetails._id) && 
                                 <DropdownMenuItem onSelect={() => handleCommentEdit(comment)}>
                                     <Pencil className='mr-2 h-4 w-4'/>
                                     Edit
                                 </DropdownMenuItem>
                             }
-                            {(currentUser._id === comment.ownerDetails._id) && 
+                            {(currentUser?._id === comment.ownerDetails._id) && 
                                 <DropdownMenuItem onSelect={() => handleCommentDelete(comment)}>
                                     <Trash2 className='mr-2 h-4 w-4'/>
                                     Delete
                                 </DropdownMenuItem>
                             }
-                            {(currentUser._id != comment.ownerDetails._id) && 
+                            {(currentUser?._id != comment.ownerDetails._id) && 
                             <DropdownMenuItem onSelect={handleCommentReport}>
                                 <Flag className='mr-2 h-4 w-4' />
                                 Report

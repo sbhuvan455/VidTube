@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState } from 'react'
+import React, { Suspense, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import axios from 'axios'
 import Link from 'next/link'
@@ -54,7 +54,7 @@ function formatDuration(minutes: number): string {
     }
 }
 
-function Search() {
+function SearchSuspense() {
 
     const [videos, setVideos] = useState<Video[] | undefined>()
     const [isLoading, setIsLoading] = useState(true)
@@ -160,6 +160,14 @@ function Search() {
                 </div>
             )}
         </div>
+    )
+}
+
+function Search() {
+    return (
+        <Suspense>
+            <SearchSuspense />
+        </Suspense>
     )
 }
 

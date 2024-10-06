@@ -49,7 +49,7 @@ export default function DashboardLayout({
                 <div className="p-4 text-center">
                     <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden">
                         <img
-                            src={currentUser?.avatar || `https://placehold.co/150/e2ddd7/000000?text=${currentUser.fullname[0]}`}
+                            src={currentUser?.avatar || `https://placehold.co/150/e2ddd7/000000?text=${currentUser?.fullname[0]}`}
                             alt={currentUser?.fullname}
                             className="object-fill"
                         />

@@ -33,7 +33,7 @@ export default function LoginPage() {
 
     const handleCoverImageChange = (e: ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
-            setAvatar(e.target.files[0])
+            setCoverImage(e.target.files[0])
         }
     }
 

@@ -102,7 +102,7 @@ export default function Posts() {
                     })
     }
 
-    const handleEmojiClick = (emojiObject: any) => {
+    const handleEmojiClick = (emojiObject: { emoji: string }) => {
         setNewPost(prevPost => prevPost + emojiObject.emoji)
     }
 

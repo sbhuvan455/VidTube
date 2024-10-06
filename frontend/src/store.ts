@@ -1,15 +1,35 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware';
 
+interface User {
+    _id: string;
+    username: string;
+    email: string;
+    fullname: string;
+    avatar: string;
+    coverImage: string;
+    watchHistory: string[];
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
+    refreshTokens: string;
+}
+
+interface Error {
+    message: string;
+    success: boolean;
+    statusCode: number;
+}
+
 type userStore = {
-    currentUser: any | null;
-    loading: Boolean;
-    error: any | null;
+    currentUser: User | null;
+    loading: boolean;
+    error: Error | null;
     isSignedIn: boolean;
     
     signInStart: () => void;
-    signInSuccess: (user: any) => void;
-    signInFailure: (error: any) => void;
+    signInSuccess: (user: User) => void;
+    signInFailure: (error: Error) => void;
     signOut: () => void;
 }
 

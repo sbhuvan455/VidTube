@@ -8,6 +8,20 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { formatDistanceToNow } from 'date-fns'
 
 
+interface Owner {
+    _id: string;
+    username: string;
+    email: string;
+    fullname: string;
+    avatar: string;
+    coverImage: string;
+    watchHistory: string[];
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
+    refreshTokens: string;
+}
+
 interface Video {
     _id: string;
     videoFile: string;
@@ -17,7 +31,7 @@ interface Video {
     duration: number;
     views: number;
     isPublished: boolean;
-    owner: any[];
+    owner: Owner[];
     createdAt: string;
     updatedAt: string;
     __v: number;
@@ -109,12 +123,12 @@ function History() {
                                     <div className="flex items-center mt-2">
                                         <img
                                             src={video.owner[0].avatar}
-                                            alt={video.owner[0].fullName}
+                                            alt={video.owner[0].fullname}
                                             width={24}
                                             height={24}
                                             className="rounded-full mr-2"
                                         />
-                                        <span className="text-sm text-gray-600">{video.owner[0]?.fullName}</span>
+                                        <span className="text-sm text-gray-600">{video.owner[0]?.fullname}</span>
                                     </div>
                                     <div className="flex justify-between text-sm text-gray-500 mt-1">
                                         <span>{video.views} views</span>

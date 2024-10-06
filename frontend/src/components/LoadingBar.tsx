@@ -11,15 +11,6 @@ export function LoadingBar() {
   const searchParams = useSearchParams()
 
   useEffect(() => {
-    const handleStart = () => {
-      setLoading(true)
-      setProgress(0)
-    }
-
-    const handleComplete = () => {
-      setLoading(false)
-      setProgress(100)
-    }
 
     let interval: NodeJS.Timeout
 
@@ -47,7 +38,7 @@ export function LoadingBar() {
   return (
     <Progress 
       value={progress} 
-      className="fixed top-0 left-0 right-0 z-50 h-1 w-full bg-transparent bg-primary transition-all duration-300 ease-in-out"
+      className="fixed top-0 left-0 right-0 z-50 h-1 w-full bg-transparent transition-all duration-300 ease-in-out"
       // indicatorClassName="bg-primary transition-all duration-300 ease-in-out"
     />
   )

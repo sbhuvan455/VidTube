@@ -4,9 +4,24 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import axios from "axios"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { MoreVerticalIcon, UsersIcon } from "lucide-react"
+import { MoreVerticalIcon } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+
+interface Owner {
+  _id: string;
+  username: string;
+  email: string;
+  password: string;
+  fullname: string;
+  avatar: string;
+  coverImage: string;
+  watchHistory: string[];
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+  refreshTokens: string;
+}
 
 interface Subscription {
   _id: string;
@@ -15,7 +30,7 @@ interface Subscription {
   createdAt: string;
   updatedAt: string;
   __v: number;
-  owner: any[];
+  owner: Owner[];
 }
 
 export default function Component() {

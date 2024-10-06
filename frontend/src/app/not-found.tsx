@@ -10,7 +10,7 @@ export default function NotFound() {
             <h1 className="text-5xl font-bold mb-2">404</h1>
             <h2 className="text-3xl font-semibold mb-4">Video Not Found</h2>
             <p className="text-xl text-gray-400 mb-8 max-w-md mx-auto">
-            Oops! The video you're looking for seems to have disappeared into the digital abyss.
+            Oops! The video you&apos;re looking for seems to have disappeared into the digital abyss.
             </p>
             <Link 
             href="/" 

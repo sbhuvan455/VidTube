@@ -1,7 +1,7 @@
 'use client'
 
 import axios from 'axios'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -63,7 +63,6 @@ export default function UpdateVideo() {
     const [isLoading, setIsLoading] = useState(false)
 
     const { videoId } = useParams()
-    const router = useRouter()
 
     useEffect(() => {
         const fetchDetails = () => {

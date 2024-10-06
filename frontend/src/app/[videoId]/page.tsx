@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { ThumbsUp, ThumbsDown, Share2, MessageSquare, Smile, MoreVerticalIcon, Pencil, Flag, Trash2 } from 'lucide-react'
+import { ThumbsUp, ThumbsDown, Smile, MoreVerticalIcon, Pencil, Flag, Trash2 } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Input } from '@/components/ui/input'
