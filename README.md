@@ -4,11 +4,15 @@
 VidTube is a full-stack video streaming platform designed to provide users with a seamless video browsing and watching experience. Built using modern web technologies, it enables the upload, storage, and playback of videos.
 
 ## Table of Contents
+- [Demo](#demo)
 - [Features](#features)
 - [Tech Stack](#tech-stack)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Deployed Application](#deployed-application)
+
+## Demo
+<video src="https://github.com/user-attachments/assets/810699c6-cb1b-4e11-996d-3e8f0612c40a" controls="controls" muted="muted" playsinline="playsinline"></video>
 
 ## Features
 - User authentication and authorization
